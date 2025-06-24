@@ -21,9 +21,9 @@ WORKDIR /app
 COPY . .
 
 RUN uv venv
-RUN uv pip install -U --prerelease allow torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 RUN uv pip install -r requirements.txt
+RUN uv pip install -U --prerelease allow torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 
-RUN git submodule update --init --recursive
+RUN git submodule update --remote --init --recursive
 
 CMD ["/bin/bash"]

@@ -1,4 +1,3 @@
-from physicsnemo.utils.profiling import Profiler
 import torch
 import copy
 
@@ -61,13 +60,10 @@ def profile_baseline(world_model, img_dec, audio_dec, dummy, dummy_pred_audio):
 
 
 if __name__ == "__main__":
-    # PhysicsNemo Profiler which is a singleton class so can set the configs here
-    # profiler = Profiler()
-    # profiler.enable("torch")
-
     world_model, img_dec, audio_dec = model_setup()
     dummy, dummy_pred_audio = create_dummy_inputs()
 
+    torch._dynamo.reset()
     profile_baseline(world_model, img_dec, audio_dec, dummy, dummy_pred_audio)
 
     from .inductor_compile import profile_torch_compile_inductor, profile_torch_compile_inductor_fp8_torchao
@@ -123,5 +119,3 @@ if __name__ == "__main__":
     # except Exception as e:
     #     print(f"Error in tensorrt compile: {type(e)}")
     #     print(f"{e} {e.__traceback__}")
-
-    # profiler.finalize()
