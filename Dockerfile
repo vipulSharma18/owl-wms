@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/tensorrt:25.05-py3
+FROM ubuntu:24.04
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 ENV DEBIAN_FRONTEND=noninteractive
