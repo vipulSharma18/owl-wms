@@ -15,6 +15,7 @@ RUN apt-get update && \
     less \
     vim \
     git \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -24,6 +25,6 @@ RUN uv venv
 RUN uv pip install -r requirements.txt
 RUN uv pip install -U --prerelease allow torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 
-RUN git submodule update --remote --init --recursive
+RUN git submodule update --remote --init --recursive --merge
 
 CMD ["/bin/bash"]
