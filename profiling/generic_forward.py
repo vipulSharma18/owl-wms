@@ -91,6 +91,8 @@ if __name__ == "__main__":
     # torch._inductor.config.freezing_discard_parameters = True  # only use for inference, this will simply get rid of the eager model Parameters of nn.Module to save memory.
     torch._inductor.config.cpp.weight_prepack = True
     torch._inductor.config.aggressive_fusion = True
+    torch._inductor.config.triton.codegen_upcast_to_fp32 = False  # don't do explicit .to(fp32) at the end of lower precision operations
+    torch._inductor.config.triton.enable_persistent_tma_matmul = True  # same kernel persists and does matmul instead of a new kernel invocation for matmul. keeps SMs busy/occupied.
 
     torch.set_float32_matmul_precision("medium")  # use bf16 or TF32 for fp32 matmul
     torch.backends.cuda.enable_flash_sdp(True)

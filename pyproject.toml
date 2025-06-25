@@ -1,16 +1,79 @@
 [project]
 name = "owl_wms"
 version = "0.1"
+requires-python = ">=3.12"
 description = "OWL World Models"
 readme = "README.md"
-dynamic = ["dependencies"]
-
-[tool.setuptools.packages.find]
-include = ["owl_wms*"]
-
-[tool.setuptools.dynamic]
-dependencies = {file = "requirements.txt"}
+dependencies = [
+    "setuptools",
+    "pytorch-triton",
+    "torch>=2.8.0.dev",
+    "torchvision>=0.23.0.dev",
+    "torchaudio>=2.8.0.dev",
+    "torchao>=0.12.0",
+    "torch-tensorrt>=2.8.0.dev",
+    "gemlite",
+    "triton",
+    "nvidia-modelopt[all]",
+    "nvidia-physicsnemo",
+    "lpips",
+    "convnext_perceptual_loss",
+    "muon-optimizer",
+    "opencv-python",
+    "wandb",
+    "einops",
+    "rotary-embedding-torch",
+    "ema-pytorch",
+    "omegaconf",
+    "diffusers",
+    "accelerate",
+    "boto3",
+    "python-dotenv",
+    "moviepy",
+    "wandb[media]",
+    "torchmetrics",
+    "vector-quantize-pytorch",
+    "ray",
+    "kornia",
+    "datasets",
+    "huggingface-hub",
+    "torchtyping",
+    "tlparse",
+    "alias-free-torch",
+]
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "setuptools"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["owl_wms"]
+
+[[tool.uv.index]]
+name = "torch_nightly"
+url = "https://download.pytorch.org/whl/nightly/cu128"
+explicit = true
+
+[[tool.uv.index]]
+name = "nvidia"
+url = "https://pypi.nvidia.com/"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "torch_nightly" }
+torchvision = { index = "torch_nightly" }
+torchaudio = { index = "torch_nightly" }
+torch-tensorrt = { index = "torch_nightly" }
+pytorch-triton = { index = "torch_nightly" }
+nvidia-modelopt = { index = "nvidia" }
+nvidia-physicsnemo = { index = "nvidia" }
+torchao = { git = "git+https://github.com/pytorch/ao/" }
+lpips = { git = "git+https://github.com/shahbuland/PerceptualSimilarity.git" }
+convnext_perceptual_loss = { git = "git+https://github.com/sypsyp97/convnext_perceptual_loss.git" }
+muon-optimizer = { git = "git+https://github.com/KellerJordan/Muon.git" }
+
+[tool.uv]
+no-build-isolation-package = ["torchao"]
+dependency-metadata = [
+    { name = "torchao", version = "0.12.0", requires-dist = ["torch", "setuptools"] }
+]

@@ -54,18 +54,12 @@ TensorRT:
 
 FP8 training using torchao.  -> training is low priority, we need fast models.
 
-'GemLiteLinearTriton' has no attribute 'forward_functional'
 
-warning: failed to autoquant AQFloat8PerRowScalingDynamicallyQuantizedLinearWeight for shape: (torch.Size([1, 2]), torch.Size([256, 2]), None, torch.bfloat16) due to Expected trailing dimension of mat1 to be divisible by 16 but got mat1 shape: (1x2).
-warning: failed to autoquant AQInt4G64WeightOnlyQuantizedLinearWeight for shape: (torch.Size([1, 2]), torch.Size([256, 2]), None, torch.bfloat16) due to 'Tensor' object has no attribute 'input_quant_func'
->>time: 0.008ms for <class 'torchao.quantization.autoquant.AQFloat16LinearWeight'>, to_beat: 0.003ms 
-
-
-enable fast accumulation for int8 and fp16
+1. enable fast accumulation for int8 and fp16
   triton_mm_1120 0.0057 ms 100.0% ACC_TYPE='tl.int32', ALLOW_TF32=True, BLOCK_K=128, BLOCK_M=16, BLOCK_N=128, EVEN_K=True, GROUP_M=8, USE_FAST_ACCUM=False, num_stages=3, num_warps=8
 
 
-torchao bugs:
+2. torchao bugs:
 
 W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] WON'T CONVERT _quantized_linear_op /app/.venv/lib/python3.12/site-packages/torchao/quantization/autoquant.py line 875
 W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] ========== TorchDynamo Stack Trace ==========
@@ -87,6 +81,7 @@ W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/co
 I0625 03:25:44.056000 127224 .venv/lib/python3.12/site-packages/torch/_utils_internal.py:122] dynamo _convert_frame_assert._compile: {'co_name': '_dispatch__torch_function__', 'frame_id': 1, 'compile_id': '1/0', 'co_filename': '/app/.venv/lib/python3.12/site-packages/torchao/utils.py', 'co_firstlineno': 411, 'cache_size': 0, 'accumulated_cache_size': 0}
 
 
+3. 'GemLiteLinearTriton' has no attribute 'forward_functional'
 Solution for gemlite:
 you're using an old version torchao, try building from master:
 USE_CPP=0 pip install git+https://github.com/pytorch/ao/
