@@ -21,19 +21,6 @@ from torchao.quantization import (
 from .profiler import profile_fn, print_results
 
 
-def dump_autoquant_cache(path = "/tmp/autoquant_cache.pkl"):
-    with open(path, "wb") as f:
-        pickle.dump(AUTOQUANT_CACHE, f)
-
-
-def reload_autoquant_cache(path = "/tmp/autoquant_cache.pkl"):
-    if os.path.exists(path):
-        with open(path, "rb") as f:
-            AUTOQUANT_CACHE.update(pickle.load(f))
-    else:
-        print(f"Autoquant cache not found at {path}")
-
-
 def profile_torch_compile_inductor(world_model, img_dec, audio_dec, dummy, dummy_pred_audio):
     ## Torch Compile with Inductor
 
@@ -53,8 +40,6 @@ def profile_torch_compile_inductor(world_model, img_dec, audio_dec, dummy, dummy
 
 def profile_torch_compile_inductor_fp8_torchao(world_model, img_dec, audio_dec, dummy, dummy_pred_audio):
     ## Torch Compile with Inductor + FP8 with torchao
-
-    reload_autoquant_cache()
 
     compiled_world_model = torchao.autoquant(
         torch.compile(world_model, mode='max-autotune', dynamic=False, fullgraph=True),
@@ -88,5 +73,3 @@ def profile_torch_compile_inductor_fp8_torchao(world_model, img_dec, audio_dec, 
 
     # res_audio = profile_fn(compiled_audio_dec, dummy_pred_audio)
     # print_results(res_audio, "Torch Compile + TorchAO AutoQuant - AUDIO")
-
-    dump_autoquant_cache()

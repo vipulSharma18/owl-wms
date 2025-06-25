@@ -87,7 +87,7 @@ if __name__ == "__main__":
     torch._inductor.config.max_autotune_pointwise = True
     torch._inductor.config.use_fast_math = True
     torch._inductor.config.cuda.use_fast_math = True
-    torch._inductor.config.freezing = True  # only use for inference, no weights updates allowed after this.
+    torch._inductor.config.freezing = True  # only use for inference, no weights updates allowed after this. Can disable if want to cache the aot graph.
     # torch._inductor.config.freezing_discard_parameters = True  # only use for inference, this will simply get rid of the eager model Parameters of nn.Module to save memory.
     torch._inductor.config.cpp.weight_prepack = True
     torch._inductor.config.aggressive_fusion = True
@@ -101,7 +101,6 @@ if __name__ == "__main__":
 
     try:
         # profile_torch_compile_inductor(copy.deepcopy(world_model), copy.deepcopy(img_dec), copy.deepcopy(audio_dec), dummy, dummy_pred_audio)
-
         profile_torch_compile_inductor_fp8_torchao(copy.deepcopy(world_model), copy.deepcopy(img_dec), copy.deepcopy(audio_dec), dummy, dummy_pred_audio)
     except Exception as e:
         print(f"Error in inductor compile: {e}")
