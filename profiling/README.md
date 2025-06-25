@@ -85,3 +85,8 @@ W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/co
 W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]     w_qtensor.weight,
 W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] 
 I0625 03:25:44.056000 127224 .venv/lib/python3.12/site-packages/torch/_utils_internal.py:122] dynamo _convert_frame_assert._compile: {'co_name': '_dispatch__torch_function__', 'frame_id': 1, 'compile_id': '1/0', 'co_filename': '/app/.venv/lib/python3.12/site-packages/torchao/utils.py', 'co_firstlineno': 411, 'cache_size': 0, 'accumulated_cache_size': 0}
+
+
+Solution for gemlite:
+you're using an old version torchao, try building from master:
+USE_CPP=0 pip install git+https://github.com/pytorch/ao/
