@@ -96,11 +96,8 @@ if __name__ == "__main__":
     torch.backends.cuda.matmul.allow_fp16_accumulation = True
     torch.backends.cudnn.benchmark = True
 
-    try:
-        # profile_torch_compile_inductor(copy.deepcopy(world_model), copy.deepcopy(img_dec), copy.deepcopy(audio_dec), dummy, dummy_pred_audio)
-        profile_torch_compile_inductor_fp8_torchao(copy.deepcopy(world_model), copy.deepcopy(img_dec), copy.deepcopy(audio_dec), dummy, dummy_pred_audio)
-    except Exception as e:
-        print(f"Error in inductor compile: {e}")
+    # profile_torch_compile_inductor(copy.deepcopy(world_model), copy.deepcopy(img_dec), copy.deepcopy(audio_dec), dummy, dummy_pred_audio)
+    profile_torch_compile_inductor_fp8_torchao(copy.deepcopy(world_model), copy.deepcopy(img_dec), copy.deepcopy(audio_dec), dummy, dummy_pred_audio)
 
 
     # from .tensorrt_compile import profile_torch_compile_tensorrt, profile_torch_compile_tensorrt_fp8_tensorrt

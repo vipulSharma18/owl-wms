@@ -74,3 +74,30 @@ W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/co
 W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]     w_qtensor.weight,
 W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] 
 I0625 03:25:44.056000 127224 .venv/lib/python3.12/site-packages/torch/_utils_internal.py:122] dynamo _convert_frame_assert._compile: {'co_name': '_dispatch__torch_function__', 'frame_id': 1, 'compile_id': '1/0', 'co_filename': '/app/.venv/lib/python3.12/site-packages/torchao/utils.py', 'co_firstlineno': 411, 'cache_size': 0, 'accumulated_cache_size': 0}
+
+
+**DEFAULT_AUTOQUANT_CLASS_LIST**  # int8 weights
+Mean: 2.26ms, 4793.05MB    
+Min: 2.06ms, 4793.05MB    
+Max: 2.45ms, 4793.05MB    
+Std: 0.03ms, 0.00MB    
+Avg FPS: 442.88FPS    
+Min FPS: 408.89FPS    
+Max FPS: 485.61FPS    
+
+**DEFAULT_INT4_AUTOQUANT_CLASS_LIST**  # mix of int8 and int4 weights
+Mean: 2.11ms, 3909.25MB    
+Min: 1.93ms, 3909.25MB    
+Max: 2.31ms, 3909.25MB    
+Std: 0.03ms, 0.00MB    
+Avg FPS: 473.87FPS    
+Min FPS: 433.59FPS    
+Max FPS: 519.17FPS    
+
+**GEMLITE_INT4_AUTOQUANT_CLASS_LIST**  # gemlite triton kernels
+
+**DEFAULT_FLOAT_AUTOQUANT_CLASS_LIST**  # fp32, fp16, bf16 weights
+
+**OTHER_AUTOQUANT_CLASS_LIST**  # fp8 weights
+
+**ALL_AUTOQUANT_CLASS_LIST**
