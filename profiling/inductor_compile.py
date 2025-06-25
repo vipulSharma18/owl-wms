@@ -42,13 +42,18 @@ def profile_torch_compile_inductor(world_model, img_dec, audio_dec, dummy, dummy
 def profile_torch_compile_inductor_fp8_torchao(world_model, img_dec, audio_dec, dummy, dummy_pred_audio):
     ## Torch Compile with Inductor + FP8 with torchao
 
-    compiled_world_model = torchao.autoquant(
-        torch.compile(world_model, mode='max-autotune', dynamic=False, fullgraph=True),
-        example_input=dummy,  # passing in example input helps to increase performance by a ton!
-        qtensor_class_list=DEFAULT_FLOAT_AUTOQUANT_CLASS_LIST,
-        set_inductor_config=False,
-    )
+    # compiled_world_model = torchao.autoquant(
+    #     torch.compile(world_model, mode='max-autotune', dynamic=False, fullgraph=True),
+    #     example_input=dummy,  # passing in example input helps to increase performance by a ton!
+    #     qtensor_class_list=ALL_AUTOQUANT_CLASS_LIST,
+    #     set_inductor_config=False,
+    # )
 
+    quantize_(world_model, Float8DynamicActivationFloat8WeightConfig(granularity=PerRow()))
+    compiled_world_model = torch.compile(world_model, mode='max-autotune', dynamic=False, fullgraph=True)
+
+    # Float8DynamicActivationFloat8WeightConfig
+    
     # DEFAULT_AUTOQUANT_CLASS_LIST,  # int8 weights
     # DEFAULT_INT4_AUTOQUANT_CLASS_LIST,  # mix of int8 and int4 weights
     # GEMLITE_INT4_AUTOQUANT_CLASS_LIST,  # gemlite triton kernels
