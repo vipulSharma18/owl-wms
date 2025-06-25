@@ -45,7 +45,6 @@ Use this PR to enable FP8 Rowwise scaling, need to use torch nightly: https://gi
 
 ## TODO:
 1. Debug FP8 autotune to wrap up FP8 inference.
-2. ~~[Done] Patch torch to use nightly or at least support row-wise scaling + cutlass code for FP8 on 5090.  -> low priority if not that much speed up. Although, just need to use nightly.~~
 
 ^ autoquant with all dtypes working -> best possible in native torch. now move on to tensorRT.
 
@@ -53,10 +52,6 @@ TensorRT:
 4. Torch -> Compile/optimize with Torch TensorRT -> ONNX with serving on TensorRT backend or ONNX backend with TensorRT.
 
 FP8 training using torchao.  -> training is low priority, we need fast models.
-
-
-1. enable fast accumulation for int8 and fp16
-  triton_mm_1120 0.0057 ms 100.0% ACC_TYPE='tl.int32', ALLOW_TF32=True, BLOCK_K=128, BLOCK_M=16, BLOCK_N=128, EVEN_K=True, GROUP_M=8, USE_FAST_ACCUM=False, num_stages=3, num_warps=8
 
 
 2. torchao bugs:
@@ -79,9 +74,3 @@ W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/co
 W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]     w_qtensor.weight,
 W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] 
 I0625 03:25:44.056000 127224 .venv/lib/python3.12/site-packages/torch/_utils_internal.py:122] dynamo _convert_frame_assert._compile: {'co_name': '_dispatch__torch_function__', 'frame_id': 1, 'compile_id': '1/0', 'co_filename': '/app/.venv/lib/python3.12/site-packages/torchao/utils.py', 'co_firstlineno': 411, 'cache_size': 0, 'accumulated_cache_size': 0}
-
-
-3. 'GemLiteLinearTriton' has no attribute 'forward_functional'
-Solution for gemlite:
-you're using an old version torchao, try building from master:
-USE_CPP=0 pip install git+https://github.com/pytorch/ao/

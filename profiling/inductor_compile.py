@@ -5,6 +5,7 @@ import torchao
 from torchao.quantization.autoquant import (
     DEFAULT_AUTOQUANT_CLASS_LIST,  # int8 weights
     DEFAULT_INT4_AUTOQUANT_CLASS_LIST,  # mix of int8 and int4 weights
+    GEMLITE_INT4_AUTOQUANT_CLASS_LIST,  # gemlite triton kernels
     DEFAULT_FLOAT_AUTOQUANT_CLASS_LIST,  # fp32, fp16, bf16 weights
     OTHER_AUTOQUANT_CLASS_LIST,  # fp8 weights
     ALL_AUTOQUANT_CLASS_LIST,
