@@ -40,43 +40,8 @@ wget https://model-checkpoints.fly.storage.tigris.dev/av_dfot_85k_ema_200m.pt -O
 Use popular video models for sanity checking methodology:
 1. https://github.com/Wan-Video/Wan2.1
 
-## Notes:
-Use this PR to enable FP8 Rowwise scaling, need to use torch nightly: https://github.com/pytorch/pytorch/pull/155991
-
-## TODO:
-1. Debug FP8 autotune to wrap up FP8 inference.
-
-^ autoquant with all dtypes working -> best possible in native torch. now move on to tensorRT.
-
-TensorRT:
-4. Torch -> Compile/optimize with Torch TensorRT -> ONNX with serving on TensorRT backend or ONNX backend with TensorRT.
-
-FP8 training using torchao.  -> training is low priority, we need fast models.
-
-
-2. torchao bugs:
-
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] WON'T CONVERT _quantized_linear_op /app/.venv/lib/python3.12/site-packages/torchao/quantization/autoquant.py line 875
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] ========== TorchDynamo Stack Trace ==========
-
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]   File "/app/.venv/lib/python3.12/site-packages/torch/_dynamo/variables/builder.py", line 1860, in assert_not_wrapped_by_this_graph
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]     if is_fake(value) and maybe_get_fake_mode(value) is self.tx.fake_mode:
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]        ^^^^^^^^^^^^^^
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]   File "/app/.venv/lib/python3.12/site-packages/torch/_subclasses/fake_tensor.py", line 193, in is_fake
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]     attrs, _ = type(x).__tensor_flatten__(x)
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]   File "/app/.venv/lib/python3.12/site-packages/torchao/utils.py", line 570, in __tensor_flatten__
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]     raise NotImplementedError("Subclasses must implement __tensor_flatten__")
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] torch._dynamo.exc.InternalTorchDynamoError: NotImplementedError: Subclasses must implement __tensor_flatten__
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] 
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] from user code:
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]    File "/app/.venv/lib/python3.12/site-packages/torchao/quantization/autoquant.py", line 881, in _quantized_linear_op
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339]     w_qtensor.weight,
-W0625 03:25:44.055000 127224 .venv/lib/python3.12/site-packages/torch/_dynamo/convert_frame.py:1339] 
-I0625 03:25:44.056000 127224 .venv/lib/python3.12/site-packages/torch/_utils_internal.py:122] dynamo _convert_frame_assert._compile: {'co_name': '_dispatch__torch_function__', 'frame_id': 1, 'compile_id': '1/0', 'co_filename': '/app/.venv/lib/python3.12/site-packages/torchao/utils.py', 'co_firstlineno': 411, 'cache_size': 0, 'accumulated_cache_size': 0}
-
-
-**DEFAULT_AUTOQUANT_CLASS_LIST**  # int8 weights
+## Results:    
+**DEFAULT_AUTOQUANT_CLASS_LIST**  # int8 weights    
 Mean: 2.26ms, 4793.05MB    
 Min: 2.06ms, 4793.05MB    
 Max: 2.45ms, 4793.05MB    
@@ -85,7 +50,7 @@ Avg FPS: 442.88FPS
 Min FPS: 408.89FPS    
 Max FPS: 485.61FPS    
 
-**DEFAULT_INT4_AUTOQUANT_CLASS_LIST**  # mix of int8 and int4 weights
+**DEFAULT_INT4_AUTOQUANT_CLASS_LIST**  # mix of int8 and int4 weights    
 Mean: 2.11ms, 3909.25MB    
 Min: 1.93ms, 3909.25MB    
 Max: 2.31ms, 3909.25MB    
@@ -94,8 +59,56 @@ Avg FPS: 473.87FPS
 Min FPS: 433.59FPS    
 Max FPS: 519.17FPS    
 
-**GEMLITE_INT4_AUTOQUANT_CLASS_LIST**  # gemlite triton kernels
-pass for now, bug in Float matmul
+**OTHER_AUTOQUANT_CLASS_LIST**  # fp8 weights    
+Mean: 2.61ms, 4566.97MB    
+Min: 2.32ms, 4566.97MB    
+Max: 2.79ms, 4566.97MB    
+Std: 0.04ms, 0.00MB    
+Avg FPS: 383.28FPS    
+Min FPS: 358.09FPS    
+Max FPS: 430.39FPS    
+
+**ALL_AUTOQUANT_CLASS_LIST**    
+Mean: 2.43ms, 5765.88MB    
+Min: 2.21ms, 5765.88MB    
+Max: 2.65ms, 5765.88MB    
+Std: 0.04ms, 0.00MB    
+Avg FPS: 411.87FPS    
+Min FPS: 377.76FPS    
+Max FPS: 452.74FPS    
+
+### FP8 activations and weights quantization, without autoquant
+**Float8WeightOnlyConfig**
+Mean: 2.55ms, 5625.50MB    
+Min: 2.44ms, 5625.50MB    
+Max: 2.80ms, 5625.50MB    
+Std: 0.07ms, 0.00MB    
+Avg FPS: 392.71FPS    
+Min FPS: 357.34FPS    
+Max FPS: 409.46FPS    
+
+**Float8DynamicActivationFloat8WeightConfig**    
+*PerTensor*    
+Mean: 3.69ms, 3527.98MB    
+Min: 3.49ms, 3527.98MB    
+Max: 3.89ms, 3527.98MB    
+Std: 0.03ms, 0.00MB    
+Avg FPS: 271.30FPS    
+Min FPS: 257.38FPS    
+Max FPS: 286.78FPS    
+
+*PerRow*    
+Mean: 4.32ms, 3530.16MB    
+Min: 3.79ms, 3530.16MB    
+Max: 4.50ms, 3530.16MB    
+Std: 0.09ms, 0.00MB    
+Avg FPS: 231.40FPS    
+Min FPS: 222.16FPS    
+Max FPS: 264.01FPS    
+
+### Bugs from autoquant for some autoquant configs, which don't impact results much, even if they worked.
+**GEMLITE_INT4_AUTOQUANT_CLASS_LIST**  # gemlite triton kernels. Bug in Float matmul.    
+```
 SingleProcess AUTOTUNE benchmarking takes 0.1109 seconds and 0.0903 seconds precompiling for 8 choices
 Compiled module path: /tmp/torchinductor_root/ib/cibbekxgogi3mugl55hni6bylv7wb3er2vsrvwl5cucz3kb2wv3u.py
 >>time: 0.007ms for <class 'torchao.quantization.autoquant.AQInt8DynamicallyQuantizedLinearWeight'> matmul, to_beat: 0.005ms
@@ -208,10 +221,10 @@ torch._dynamo.exc.BackendCompilerFailed: backend='inductor' raised:
 RuntimeError: mat1 and mat2 must have the same dtype, but got Float and BFloat16
 
 Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+```
 
-
-**DEFAULT_FLOAT_AUTOQUANT_CLASS_LIST**  # fp32, fp16, bf16 weights
-pass: fails with missing as_proxy bug.
+**DEFAULT_FLOAT_AUTOQUANT_CLASS_LIST**  # fp32, fp16, bf16 weights. Bug: fails with missing as_proxy.     
+```
 activation_shapes: torch.Size([1, 1536]), times_seen: 1
 weight_shape: torch.Size([64, 1536]), dtype: torch.bfloat16, bias_shape: torch.Size([64])
 >>time: 0.016ms for <class 'torchao.quantization.autoquant.AQFloat32LinearWeight'>, to_beat: infms 
@@ -270,52 +283,4 @@ from user code:
     return F.linear(input, self.weight, self.bias)
 
 Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
-
-
-**OTHER_AUTOQUANT_CLASS_LIST**  # fp8 weights
-*  Torch Compile + TorchAO AutoQuant - WM    
-Mean: 2.61ms, 4566.97MB    
-Min: 2.32ms, 4566.97MB    
-Max: 2.79ms, 4566.97MB    
-Std: 0.04ms, 0.00MB    
-Avg FPS: 383.28FPS    
-Min FPS: 358.09FPS    
-Max FPS: 430.39FPS    
-
-**ALL_AUTOQUANT_CLASS_LIST**
-Mean: 2.43ms, 5765.88MB    
-Min: 2.21ms, 5765.88MB    
-Max: 2.65ms, 5765.88MB    
-Std: 0.04ms, 0.00MB    
-Avg FPS: 411.87FPS    
-Min FPS: 377.76FPS    
-Max FPS: 452.74FPS    
-
-# Explicit FP8 activations checkpointing for faster speed, no autoquant.
-**Float8WeightOnlyConfig**
-Mean: 2.55ms, 5625.50MB    
-Min: 2.44ms, 5625.50MB    
-Max: 2.80ms, 5625.50MB    
-Std: 0.07ms, 0.00MB    
-Avg FPS: 392.71FPS    
-Min FPS: 357.34FPS    
-Max FPS: 409.46FPS    
-
-**Float8DynamicActivationFloat8WeightConfig**
-*PerTensor*
-Mean: 3.69ms, 3527.98MB    
-Min: 3.49ms, 3527.98MB    
-Max: 3.89ms, 3527.98MB    
-Std: 0.03ms, 0.00MB    
-Avg FPS: 271.30FPS    
-Min FPS: 257.38FPS    
-Max FPS: 286.78FPS    
-
-*PerRow*
-Mean: 4.32ms, 3530.16MB    
-Min: 3.79ms, 3530.16MB    
-Max: 4.50ms, 3530.16MB    
-Std: 0.09ms, 0.00MB    
-Avg FPS: 231.40FPS    
-Min FPS: 222.16FPS    
-Max FPS: 264.01FPS    
+```
